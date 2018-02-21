@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.ji.movieapp.DetailActivity"
+    tools:showIn="@layout/activity_detail">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="140dp"
+            android:layout_height="200dp"
+            android:layout_marginRight="36dp"
+            android:contentDescription="@string/no_image"
+            android:fitsSystemWindows="true"
+            android:scaleType="centerCrop"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:textSize="20dp"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toTopOf="@id/rating"
+            app:layout_constraintLeft_toRightOf="@id/imageView"
+            tools:layout_editor_absoluteX="185dp"
+            tools:layout_editor_absoluteY="8dp"
+            tools:text="date" />
+
+        <TextView
+            android:id="@+id/rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@id/date"
+            app:layout_constraintLeft_toRightOf="@id/imageView"
+            app:layout_constraintTop_toBottomOf="@id/date"
+            tools:layout_editor_absoluteX="193dp"
+            tools:layout_editor_absoluteY="43dp"
+            tools:text="4.9" />
+
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintLeft_toLeftOf="@+id/imageView"
+            app:layout_constraintTop_toBottomOf="@id/imageView"
+            tools:text="TEST" />
+
+        <TextView
+            android:id="@+id/trailers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/trailers"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@+id/description"
+            app:layout_constraintTop_toBottomOf="@+id/description"
+            tools:text="TRAILERS" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/videoRV"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="@+id/trailers"
+            app:layout_constraintTop_toBottomOf="@+id/trailers"></android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/reviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/reviews"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@+id/trailers"
+            app:layout_constraintTop_toBottomOf="@+id/videoRV"
+            tools:text="REVIEWS" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="@+id/reviews"
+            app:layout_constraintTop_toBottomOf="@+id/reviews"></android.support.v7.widget.RecyclerView>
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v4.widget.NestedScrollView>
