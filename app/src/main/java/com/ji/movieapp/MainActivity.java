@@ -228,5 +228,12 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         editor.putString("sorting", sortingMethod);
         editor.apply();
     }
-
+    
+ @Override
+    protected void onResume() {
+        super.onResume();
+        if (mGridView.getVisibility() == View.VISIBLE) { //IF TRUE IT MEANS WE ARE IN FAVOURITE LIST
+            setUpGridView(); //this will update the data even if i remove a new favourite from the detail activity
+        }
+    } 
 }
