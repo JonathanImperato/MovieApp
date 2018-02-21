@@ -258,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
 
         if (RVstate != null && mRecyclerView != null) {
             RVLayoutManager.onRestoreInstanceState(RVstate);
-            mRecyclerView.setLayoutManager(RVLayoutManager);
         }
 
         if (GVstate != null && mGridView != null) {
