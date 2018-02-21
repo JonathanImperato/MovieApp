@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -39,15 +40,21 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
     int numberOfColumns = 2;
     GridView mGridView;
     int CURSOR_LOADER_ID = 3;
+    Parcelable RVstate, GVstate;
+    GridLayoutManager RVLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         pBar = findViewById(R.id.pBar);
-        mRecyclerView = findViewById(R.id.listFilms);
-        mGridView = findViewById(R.id.gridView);
 
+        RVLayoutManager = new GridLayoutManager(this, numberOfColumns);
+        mRecyclerView = findViewById(R.id.listFilms);
+        mRecyclerView.setLayoutManager(RVLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
+
+        mGridView = findViewById(R.id.gridView);
         mGridView.setHorizontalSpacing(0);
         mGridView.setVerticalSpacing(0);
 
@@ -55,40 +62,14 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
             mRecyclerView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
         } else {
             if (isInternetAvailable()) {
-                mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-                mRecyclerView.setHasFixedSize(true);
                 setUpRecyclerView(TASK_ID);
             } else {
                 Toast.makeText(this, R.string.no_internet, Toast.LENGTH_SHORT).show();
                 setUpGridView();
             }
-
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        if (mRecyclerView.getVisibility() == View.VISIBLE) { //IT MEANS I AM NOT USING GRIDVIEW
-            outState.putInt("ScrollStateX", mRecyclerView.getScrollX());
-            outState.putInt("ScrollStateY", mRecyclerView.getScrollY());
-        } else {
-            outState.putInt("ScrollStateX", mGridView.getScrollX());
-            outState.putInt("ScrollStateY", mGridView.getScrollY());
-
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (mRecyclerView.getVisibility() == View.VISIBLE) { //IT MEANS I AM NOT USING GRIDVIEW
-            mRecyclerView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
-        } else {
-            mGridView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -227,6 +208,68 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("sorting", sortingMethod);
         editor.apply();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mRecyclerView.getVisibility() == View.VISIBLE) { //IT MEANS I AM NOT USING GRIDVIEW
+            outState.putInt("ScrollStateX", mRecyclerView.getScrollX());
+            outState.putInt("ScrollStateY", mRecyclerView.getScrollY());
+            if (mRecyclerView != null && mRecyclerView.getLayoutManager() != null) {
+                RVstate = RVLayoutManager.onSaveInstanceState();
+                outState.putParcelable("RVstate", RVstate);
+
+            }
+        } else {
+            outState.putInt("ScrollStateX", mGridView.getScrollX());
+            outState.putInt("ScrollStateY", mGridView.getScrollY());
+            if (mGridView != null) {
+                GVstate = mGridView.onSaveInstanceState();
+                outState.putParcelable("GVstate", GVstate);
+            }
+
+        }
+    }
+
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            RVstate = savedInstanceState.getParcelable("RVstate");
+            GVstate = savedInstanceState.getParcelable("GVstate");
+            RVLayoutManager.onRestoreInstanceState(RVstate);
+        }
+        if (mRecyclerView.getVisibility() == View.VISIBLE) { //IT MEANS I AM NOT USING GRIDVIEW
+            mRecyclerView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
+        } else {
+            mGridView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mRecyclerView = findViewById(R.id.listFilms);
+        mGridView = findViewById(R.id.gridView);
+
+        if (RVstate != null && mRecyclerView != null) {
+            RVLayoutManager.onRestoreInstanceState(RVstate);
+            mRecyclerView.setLayoutManager(RVLayoutManager);
+        }
+
+        if (GVstate != null && mGridView != null) {
+            mGridView.onRestoreInstanceState(GVstate);
+        }
+
+
+
+        if (mGridView.getVisibility() == View.VISIBLE) { //IF TRUE IT MEANS WE ARE IN FAVOURITE LIST
+            setUpGridView(); //this will update the data even if i remove a new favourite from the detail activity
+        }
     }
 
 }

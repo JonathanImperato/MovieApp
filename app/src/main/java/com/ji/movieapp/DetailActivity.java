@@ -98,7 +98,8 @@ public class DetailActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     if (movie.getVideosUrl() != null && movie.getVideosUrl().size() > 0) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(movie.getVideosUrl().get(0)));
-                        startActivity(browserIntent);
+                        if (browserIntent.resolveActivity(getPackageManager()) != null)
+                            startActivity(browserIntent);
                     } else
                         Toast.makeText(DetailActivity.this, getString(R.string.no_trailer), Toast.LENGTH_LONG).show();
                 }
@@ -120,54 +121,55 @@ public class DetailActivity extends AppCompatActivity {
 
     void updateDataFromOfflineToOnline() {
 
-        if (getSupportLoaderManager().getLoader(FAV_LOADER_ID) == null || !getSupportLoaderManager().getLoader(FAV_LOADER_ID).isStarted())
-            getSupportLoaderManager().initLoader(FAV_LOADER_ID, null, new LoaderManager.LoaderCallbacks<Movie>() {
-                @Override
-                public Loader<Movie> onCreateLoader(int id, Bundle args) {
-                    LoadSingleMovie ll = new LoadSingleMovie(getApplicationContext(), movie.getId());
-                    ll.forceLoad();
-                    return ll;
-                }
+        // if (getSupportLoaderManager().getLoader(FAV_LOADER_ID) == null || !getSupportLoaderManager().getLoader(FAV_LOADER_ID).isStarted())
+        getSupportLoaderManager().initLoader(FAV_LOADER_ID, null, new LoaderManager.LoaderCallbacks<Movie>() {
+            @Override
+            public Loader<Movie> onCreateLoader(int id, Bundle args) {
+                LoadSingleMovie ll = new LoadSingleMovie(getApplicationContext(), movie.getId());
+                ll.forceLoad();
+                return ll;
+            }
 
-                @Override
-                public void onLoadFinished(Loader<Movie> loader, final Movie data) {
-                    if (data == null) {
-                        reviewLabel.setVisibility(View.GONE);
-                        trailerLabelTollbar.setVisibility(View.GONE);
-                        trailerLabel.setVisibility(View.GONE);
-                        mRecyclerViewTrailers.setVisibility(View.GONE);
-                        mRecyclerView.setVisibility(View.GONE);
-                        playButton.setVisibility(View.GONE);
-                    } else {
+            @Override
+            public void onLoadFinished(Loader<Movie> loader, final Movie data) {
+                if (data == null) {
+                    reviewLabel.setVisibility(View.GONE);
+                    trailerLabelTollbar.setVisibility(View.GONE);
+                    trailerLabel.setVisibility(View.GONE);
+                    mRecyclerViewTrailers.setVisibility(View.GONE);
+                    mRecyclerView.setVisibility(View.GONE);
+                    playButton.setVisibility(View.GONE);
+                } else {
 
-                        rating.setText(getString(R.string.rating) + data.getRating());
-                        date.setText(getString(R.string.date) + data.getReleaseDate());
-                        playButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (data.getVideosUrl() != null && data.getVideosUrl().size() > 0) {
-                                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getVideosUrl().get(0)));
-                                    startActivity(browserIntent);
-                                } else
-                                    Toast.makeText(DetailActivity.this, getString(R.string.no_trailer), Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        setUpRecyclerView();
-                        ArrayList<String> videoList = data.getVideosUrl();
-                        if (videoList.size() > 0) {
-                            mRecyclerViewTrailers.setLayoutManager(new LinearLayoutManager(DetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
-                            VideoAdapter videoAdapter1 = new VideoAdapter(DetailActivity.this, videoList);
-                            mRecyclerViewTrailers.setAdapter(videoAdapter1);
+                    rating.setText(getString(R.string.rating) + data.getRating());
+                    date.setText(getString(R.string.date) + data.getReleaseDate());
+                    playButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (data.getVideosUrl() != null && data.getVideosUrl().size() > 0) {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getVideosUrl().get(0)));
+                                startActivity(browserIntent);
+                            } else
+                                Toast.makeText(DetailActivity.this, getString(R.string.no_trailer), Toast.LENGTH_LONG).show();
                         }
+                    });
+                    setUpRecyclerView();
+                    ArrayList<String> videoList = data.getVideosUrl();
+                    if (videoList.size() > 0) {
+                        mRecyclerViewTrailers.setLayoutManager(new LinearLayoutManager(DetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                        VideoAdapter videoAdapter1 = new VideoAdapter(DetailActivity.this, videoList);
+                        mRecyclerViewTrailers.setAdapter(videoAdapter1);
                     }
                 }
+            }
 
-                @Override
-                public void onLoaderReset(Loader<Movie> loader) {
+            @Override
+            public void onLoaderReset(Loader<Movie> loader) {
 
-                }
-            });
+            }
+        });
     }
+
 
     boolean isInternetAvailable() {
 
@@ -279,4 +281,25 @@ public class DetailActivity extends AppCompatActivity {
             return c.getCount() > 0;
         } else return true;
     }
+/*
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Parcelable mRVstate = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        Parcelable mRVTstate = mRecyclerViewTrailers.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable("mRVstate", mRVstate);
+        outState.putParcelable("mRVTstate", mRVTstate);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Parcelable mRVstate = savedInstanceState.getParcelable("mRVstate");
+        Parcelable mRVTstate = savedInstanceState.getParcelable("mRVTstate");
+        if (mRVstate != null && mRecyclerView != null)
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mRVstate);
+        if (mRVTstate != null && mRecyclerViewTrailers != null)
+            mRecyclerViewTrailers.getLayoutManager().onRestoreInstanceState(mRVTstate);
+    }
+*/
 }
