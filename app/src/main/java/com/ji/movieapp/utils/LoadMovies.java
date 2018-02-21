@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.ji.movieapp.R;
 import com.ji.movieapp.widget.Movie;
 
 import org.json.JSONArray;
@@ -28,11 +29,12 @@ public class LoadMovies extends android.support.v4.content.AsyncTaskLoader<Array
 
     static Context mContext;
 
-    String KEY = "YOUR KEY HERE";
     public LoadMovies(Context context) {
         super(context);
         mContext = context;
     }
+
+    String KEY = mContext.getString(R.string.key);
 
     @Override
     public ArrayList<Movie> loadInBackground() {

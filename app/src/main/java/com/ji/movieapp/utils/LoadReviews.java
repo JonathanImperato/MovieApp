@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.ji.movieapp.R;
 import com.ji.movieapp.widget.Review;
 
 import org.json.JSONArray;
@@ -28,12 +29,13 @@ public class LoadReviews extends android.support.v4.content.AsyncTaskLoader<Arra
     static Context mContext;
     static String id;
 
-    String KEY = "YOUR KEY HERE";
     public LoadReviews(Context context, String _id) {
         super(context);
         mContext = context;
         id = _id;
     }
+
+    String KEY = mContext.getString(R.string.key);
 
     @Override
     public ArrayList<Review> loadInBackground() {

@@ -39,7 +39,7 @@ public class VideoAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ((VideoAdapter.VideoAdapterViewHolder) holder).text.setText("Play Trailer " + String.valueOf(position + 1));
+        ((VideoAdapter.VideoAdapterViewHolder) holder).text.setText(mContext.getString(R.string.play_trailer) + String.valueOf(position + 1));
     }
 
     @Override

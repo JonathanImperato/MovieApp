@@ -276,9 +276,7 @@ public class DetailActivity extends AppCompatActivity {
                     MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + " = " + movie.getId(),
                     null,
                     null);
-            if (c.getCount() > 0)
-                return true;
-            return false;
+            return c.getCount() > 0;
         } else return true;
     }
 }

@@ -3,6 +3,7 @@ package com.ji.movieapp.utils;
 import android.content.Context;
 import android.net.Uri;
 
+import com.ji.movieapp.R;
 import com.ji.movieapp.widget.Movie;
 
 import org.json.JSONArray;
@@ -26,10 +27,12 @@ public class LoadSingleMovie extends android.support.v4.content.AsyncTaskLoader<
 
     String id;
 
-    String KEY = "YOUR KEY HERE";
+    String KEY;
+
     public LoadSingleMovie(Context context, String movieId) {
         super(context);
         id = movieId;
+        KEY = context.getString(R.string.key);
     }
 
     @Override
@@ -41,7 +44,7 @@ public class LoadSingleMovie extends android.support.v4.content.AsyncTaskLoader<
         URL movieUrl = buildMovieUrl(movieId);
         String jsonString = getResponseFromHttpUrl(movieUrl);
         Movie movie = getMovie(jsonString, movieId);
-        return movie != null ? movie : null;
+        return movie;
     }
 
     Movie getMovie(String json, String id) {
@@ -118,7 +121,7 @@ public class LoadSingleMovie extends android.support.v4.content.AsyncTaskLoader<
     }
 
     private java.net.URL buildVideoUrl(String id) {
-        String BASE_URL = "https://api.themoviedb.org/3/movie/" + id + "/videos"  + "?api_key=";
+        String BASE_URL = "https://api.themoviedb.org/3/movie/" + id + "/videos" + "?api_key=";
 
         Uri moviesUri = Uri.parse(BASE_URL + KEY).buildUpon()
                 //  .appendQueryParameter("app_key", KEY)
