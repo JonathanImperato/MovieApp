@@ -13,14 +13,14 @@
     <string name="play_trailer">Play trailer</string>
     <string name="error">Error</string>
     <string name="no_trailer">No trailer available, sorry!</string>
-    <string name="reviews">REVIEWS:</string>
+    <string name="reviews">REVIEWS </string>
     <string name="fav_added">Added to fav list.</string>
     <string name="favourites">Favourites</string>
     <string name="most_rated">Most rated</string>
     <string name="popular">Popular</string>
     <string name="fav_removed">Removed from Favourites</string>
-    <string name="trailers">TRAILERS</string>
+    <string name="trailers">TRAILERS </string>
     <string name="movie_image">Movie image</string>
-    <string name="key">YOUR KEY HERE</string>
-    <string name="test">test</string>
+    <string name="test">TEST</string>
+    <string name="key">PUT YOUR KEY HERE</string>
 </resources>

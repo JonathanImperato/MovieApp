@@ -79,8 +79,8 @@ public class DetailActivity extends AppCompatActivity {
             mRecyclerViewTrailers.setHasFixedSize(true);
             ArrayList<String> videos = movie.getVideosUrl();
             videoAdapter = new VideoAdapter(this, videos);
+            mRecyclerViewTrailers.setLayoutManager(new LinearLayoutManager(DetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
             mRecyclerViewTrailers.setAdapter(videoAdapter);
-
             toolbar.setTitle(movie.getName());
             collapsingToolbarLayout.setTitle(movie.getName());
             Picasso.with(this).load(movie.getImage()).into(imageView);

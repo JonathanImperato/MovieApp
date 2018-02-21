@@ -35,7 +35,7 @@ public class LoadReviews extends android.support.v4.content.AsyncTaskLoader<Arra
         id = _id;
     }
 
-    String KEY = mContext.getString(R.string.key);
+    String KEY = getContext().getString(R.string.key);
 
     @Override
     public ArrayList<Review> loadInBackground() {

@@ -34,7 +34,7 @@ public class LoadMovies extends android.support.v4.content.AsyncTaskLoader<Array
         mContext = context;
     }
 
-    String KEY = mContext.getString(R.string.key);
+    String KEY = getContext().getString(R.string.key);
 
     @Override
     public ArrayList<Movie> loadInBackground() {
