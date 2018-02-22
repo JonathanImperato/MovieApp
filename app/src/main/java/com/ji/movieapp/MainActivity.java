@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
             } else {
                 Toast.makeText(this, R.string.no_internet, Toast.LENGTH_SHORT).show();
                 setUpGridView();
+                getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
             }
         }
     }
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
             case R.id.fav:
                 setUpGridView();
                 setSelectedSortingMethod("favourite");
+                getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this); //this let the user update his fav list
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -260,7 +262,8 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
 
         if (getSelectedSortingMethod().equals("favourite") || mGridView.getVisibility() == View.VISIBLE) { //IF TRUE IT MEANS WE ARE IN FAVOURITE LIST
             setUpGridView(); //this will update the data even if i remove a new favourite from the detail activity
-            //mGridView.setSelection(GridViewLatestPosition);
+            if (GridViewLatestPosition > 0)
+                mGridView.setSelection(GridViewLatestPosition);
         }
     }
 
