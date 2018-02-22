@@ -144,7 +144,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     void updateDataFromOfflineToOnline() {
-
         // if (getSupportLoaderManager().getLoader(FAV_LOADER_ID) == null || !getSupportLoaderManager().getLoader(FAV_LOADER_ID).isStarted())
         getSupportLoaderManager().initLoader(FAV_LOADER_ID, null, new LoaderManager.LoaderCallbacks<Movie>() {
             @Override

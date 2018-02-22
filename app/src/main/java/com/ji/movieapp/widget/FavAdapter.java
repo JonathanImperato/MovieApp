@@ -1,8 +1,11 @@
 package com.ji.movieapp.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -72,9 +75,24 @@ public class FavAdapter extends CursorAdapter {
         viewHolder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mContext.startActivity(new Intent(mContext, DetailActivity.class).putExtra("movie_fav", movie));
+                // Ordinary Intent for launching a new activity
+                Intent intent =
+                        new Intent(mContext, DetailActivity.class).putExtra("movie_fav", movie);
+
+                // Get the transition name from the string
+                String transitionName = mContext.getString(R.string.transition_string);
+
+                // Define the view that the animation will start from
+                View viewStart = view.findViewById(R.id.thumbnail);
+
+                ActivityOptionsCompat options =
+                        ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, viewStart, transitionName);
+
+                //Start the Intent
+                ActivityCompat.startActivity(mContext, intent, options.toBundle());
             }
         });
+
     }
 
     public static class ViewHolder {
