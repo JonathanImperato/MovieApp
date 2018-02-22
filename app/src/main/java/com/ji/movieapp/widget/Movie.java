@@ -16,7 +16,7 @@ public class Movie implements Parcelable {
     String briefDescription;
     ArrayList<String> videosUrl;
     String id;
-    int rating;
+    double rating;
 
     public Movie() {
     }
@@ -103,11 +103,11 @@ public class Movie implements Parcelable {
         this.briefDescription = briefDescription;
     }
 
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 
@@ -125,6 +125,6 @@ public class Movie implements Parcelable {
         parcel.writeString(briefDescription);
         parcel.writeStringList(videosUrl);
         parcel.writeString(id);
-        parcel.writeInt(rating);
+        parcel.writeDouble(rating);
     }
 }

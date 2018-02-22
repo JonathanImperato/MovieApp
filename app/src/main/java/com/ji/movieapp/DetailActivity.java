@@ -17,7 +17,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -71,15 +70,16 @@ public class DetailActivity extends AppCompatActivity {
         mRecyclerViewTrailers = findViewById(R.id.videoRV);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(DetailActivity.this));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerViewTrailers.setLayoutManager(new LinearLayoutManager(DetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerViewTrailers.setHasFixedSize(true);
+        mRecyclerViewTrailers.setAdapter(videoAdapter);
 
         if (getIntent().getExtras().getParcelable("movie") != null) {
             movie = getIntent().getExtras().getParcelable("movie");
-
-            mRecyclerView.setHasFixedSize(true);
-            mRecyclerViewTrailers.setHasFixedSize(true);
             ArrayList<String> videos = movie.getVideosUrl();
             videoAdapter = new VideoAdapter(this, videos);
-            mRecyclerViewTrailers.setLayoutManager(new LinearLayoutManager(DetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
             mRecyclerViewTrailers.setAdapter(videoAdapter);
             toolbar.setTitle(movie.getName());
             collapsingToolbarLayout.setTitle(movie.getName());
@@ -114,7 +114,10 @@ public class DetailActivity extends AppCompatActivity {
             Picasso.with(this).load(myM.getImage()).into(imageView);
             Picasso.with(this).load(myM.getImage()).into(toolBarImage);
             description.setText(myM.getBriefDescription());
-            if (isInternetAvailable()) updateDataFromOfflineToOnline();
+            if (isInternetAvailable()) {
+                updateDataFromOfflineToOnline();
+                setUpRecyclerView();
+            }
         }
 
     }
@@ -133,16 +136,15 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onLoadFinished(Loader<Movie> loader, final Movie data) {
                 if (data == null) {
-                    reviewLabel.setVisibility(View.GONE);
                     trailerLabelTollbar.setVisibility(View.GONE);
                     trailerLabel.setVisibility(View.GONE);
+                    reviewLabel.setVisibility(View.GONE);
                     mRecyclerViewTrailers.setVisibility(View.GONE);
                     mRecyclerView.setVisibility(View.GONE);
                     playButton.setVisibility(View.GONE);
                 } else {
-
-                    rating.setText(getString(R.string.rating) + data.getRating());
-                    date.setText(getString(R.string.date) + data.getReleaseDate());
+                    rating.setText(getString(R.string.rating) + " " + data.getRating());
+                    date.setText(getString(R.string.date) + " " + data.getReleaseDate());
                     playButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -153,12 +155,13 @@ public class DetailActivity extends AppCompatActivity {
                                 Toast.makeText(DetailActivity.this, getString(R.string.no_trailer), Toast.LENGTH_LONG).show();
                         }
                     });
-                    setUpRecyclerView();
                     ArrayList<String> videoList = data.getVideosUrl();
-                    if (videoList.size() > 0) {
-                        mRecyclerViewTrailers.setLayoutManager(new LinearLayoutManager(DetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                    if (videoList != null && videoList.size() > 0) {
                         VideoAdapter videoAdapter1 = new VideoAdapter(DetailActivity.this, videoList);
                         mRecyclerViewTrailers.setAdapter(videoAdapter1);
+                    } else {
+                        mRecyclerViewTrailers.setVisibility(View.GONE);
+                        trailerLabel.setVisibility(View.GONE);
                     }
                 }
             }
@@ -169,7 +172,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
     }
-
 
     boolean isInternetAvailable() {
 
@@ -241,32 +243,28 @@ public class DetailActivity extends AppCompatActivity {
     void setUpRecyclerView() {
         mAdapter = null;
         mRecyclerView.setAdapter(mAdapter);
-        if (getSupportLoaderManager().getLoader(REVIEW_LOADER_ID) == null || !getSupportLoaderManager().getLoader(REVIEW_LOADER_ID).isStarted())
-            getSupportLoaderManager().initLoader(REVIEW_LOADER_ID, null, new LoaderManager.LoaderCallbacks<ArrayList<Review>>() {
-                @Override
-                public Loader<ArrayList<Review>> onCreateLoader(int id, Bundle args) {
-                    Log.wtf("WTF", movie.getId());
-                    LoadReviews asyncTaskLoader = new LoadReviews(getApplicationContext(), movie.getId());
-                    asyncTaskLoader.forceLoad();
-                    return asyncTaskLoader;
-                }
+        getSupportLoaderManager().initLoader(REVIEW_LOADER_ID, null, new LoaderManager.LoaderCallbacks<ArrayList<Review>>() {
+            @Override
+            public Loader<ArrayList<Review>> onCreateLoader(int id, Bundle args) {
+                LoadReviews asyncTaskLoader = new LoadReviews(getApplicationContext(), movie.getId());
+                asyncTaskLoader.forceLoad();
+                return asyncTaskLoader;
+            }
 
-                @Override
-                public void onLoadFinished(Loader<ArrayList<Review>> loader, ArrayList<Review> data) {
+            @Override
+            public void onLoadFinished(Loader<ArrayList<Review>> loader, ArrayList<Review> data) {
+                ReviewAdapter adapter = new ReviewAdapter(data, DetailActivity.this);
+                if (data == null || data.size() < 1)
+                    reviewLabel.setVisibility(View.GONE);
+                mAdapter = adapter;
+                mRecyclerView.setAdapter(adapter);
+            }
 
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(DetailActivity.this));
-                    ReviewAdapter adapter = new ReviewAdapter(data, DetailActivity.this);
-                    mAdapter = adapter;
-                    mRecyclerView.setAdapter(adapter);
-                    //Log.wtf("SIZE", String.valueOf(data.size()));
+            @Override
+            public void onLoaderReset(Loader<ArrayList<Review>> loader) {
 
-                }
-
-                @Override
-                public void onLoaderReset(Loader<ArrayList<Review>> loader) {
-
-                }
-            });
+            }
+        });
 
     }
 
@@ -281,25 +279,4 @@ public class DetailActivity extends AppCompatActivity {
             return c.getCount() > 0;
         } else return true;
     }
-/*
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Parcelable mRVstate = mRecyclerView.getLayoutManager().onSaveInstanceState();
-        Parcelable mRVTstate = mRecyclerViewTrailers.getLayoutManager().onSaveInstanceState();
-        outState.putParcelable("mRVstate", mRVstate);
-        outState.putParcelable("mRVTstate", mRVTstate);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Parcelable mRVstate = savedInstanceState.getParcelable("mRVstate");
-        Parcelable mRVTstate = savedInstanceState.getParcelable("mRVTstate");
-        if (mRVstate != null && mRecyclerView != null)
-            mRecyclerView.getLayoutManager().onRestoreInstanceState(mRVstate);
-        if (mRVTstate != null && mRecyclerViewTrailers != null)
-            mRecyclerViewTrailers.getLayoutManager().onRestoreInstanceState(mRVTstate);
-    }
-*/
 }

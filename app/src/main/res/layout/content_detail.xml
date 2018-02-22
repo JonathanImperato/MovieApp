@@ -51,14 +51,23 @@
             tools:layout_editor_absoluteY="43dp"
             tools:text="4.9" />
 
+        <TextView
+            android:id="@+id/descriptionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/description"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="@+id/imageView"
+            app:layout_constraintTop_toBottomOf="@id/imageView" />
 
         <TextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            app:layout_constraintLeft_toLeftOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@id/imageView"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="@+id/descriptionLabel"
+            app:layout_constraintTop_toBottomOf="@id/descriptionLabel"
             tools:text="TEST" />
 
         <TextView

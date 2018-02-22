@@ -14,6 +14,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,13 +43,13 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
     int CURSOR_LOADER_ID = 3;
     Parcelable RVstate, GVstate;
     GridLayoutManager RVLayoutManager;
+    int GridViewLatestPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         pBar = findViewById(R.id.pBar);
-
         RVLayoutManager = new GridLayoutManager(this, numberOfColumns);
         mRecyclerView = findViewById(R.id.listFilms);
         mRecyclerView.setLayoutManager(RVLayoutManager);
@@ -59,7 +60,15 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         mGridView.setVerticalSpacing(0);
 
         if (savedInstanceState != null) {
-            mRecyclerView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
+            if (!getSelectedSortingMethod().equals("favourite")) {
+                mRecyclerView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
+                setUpRecyclerView(TASK_ID);
+            } else {
+                //mGridView.scrollTo(savedInstanceState.getInt("GScrollStateX"), savedInstanceState.getInt("GScrollStateY"));
+                mGridView.setSelection(savedInstanceState.getInt("G"));
+                if (GridViewLatestPosition > 0)
+                    mGridView.setSelection(GridViewLatestPosition);
+            }
         } else {
             if (isInternetAvailable()) {
                 setUpRecyclerView(TASK_ID);
@@ -69,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
             }
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
                 break;
             case R.id.fav:
                 setUpGridView();
+                setSelectedSortingMethod("favourite");
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -140,67 +149,45 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
     }
 
     void setUpGridView() {
-        if (getLoaderManager().getLoader(CURSOR_LOADER_ID) == null || !getLoaderManager().getLoader(CURSOR_LOADER_ID).isStarted())
-            getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-        else
-            getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
         pBar.setVisibility(View.VISIBLE);
+        mAdapterGrid = new FavAdapter(this, null, 0, CURSOR_LOADER_ID);
         mRecyclerView.setVisibility(View.GONE);
         mGridView.setVisibility(View.VISIBLE);
-        mAdapterGrid = new FavAdapter(this, null, 0, CURSOR_LOADER_ID);
         mGridView.setAdapter(mAdapterGrid);
         pBar.setVisibility(View.GONE);
+
+        // if (getLoaderManager().getLoader(CURSOR_LOADER_ID) == null) //THIS LET ME UPDATE THE LIST AFTER ADDED SOME NEW FAVS
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+        //  else
+        //     getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
     }
 
     void setUpRecyclerView(int id) {
         mAdapter = null;
         mRecyclerView.setAdapter(mAdapter);
-        if (getSupportLoaderManager().getLoader(id) == null || !getSupportLoaderManager().getLoader(id).isStarted())
-            getSupportLoaderManager().initLoader(id, TASK_BUNDLE, new LoaderManager.LoaderCallbacks<ArrayList<Movie>>() {
-                @Override
-                public Loader<ArrayList<Movie>> onCreateLoader(int id, Bundle args) {
-                    pBar.setVisibility(View.VISIBLE);
-                    LoadMovies asyncTaskLoader = new LoadMovies(getApplicationContext());
-                    asyncTaskLoader.forceLoad();
-                    return asyncTaskLoader;
-                }
+        getSupportLoaderManager().initLoader(id, TASK_BUNDLE, new LoaderManager.LoaderCallbacks<ArrayList<Movie>>() {
+            @Override
+            public Loader<ArrayList<Movie>> onCreateLoader(int id, Bundle args) {
+                pBar.setVisibility(View.VISIBLE);
+                LoadMovies asyncTaskLoader = new LoadMovies(getApplicationContext());
+                asyncTaskLoader.forceLoad();
+                return asyncTaskLoader;
+            }
 
-                @Override
-                public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
-                    pBar.setVisibility(View.GONE);
-                    mAdapter = new MoviesAdapter(MainActivity.this, data);
-                    mAdapter.notifyDataSetChanged();
-                    mRecyclerView.setAdapter(mAdapter);
-                }
+            @Override
+            public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
+                pBar.setVisibility(View.GONE);
+                mAdapter = new MoviesAdapter(MainActivity.this, data);
+                mAdapter.notifyDataSetChanged();
+                mRecyclerView.setAdapter(mAdapter);
 
-                @Override
-                public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
-                    pBar.setVisibility(View.GONE);
-                }
-            });
-        else
-            getSupportLoaderManager().restartLoader(id, TASK_BUNDLE, new LoaderManager.LoaderCallbacks<ArrayList<Movie>>() {
-                @Override
-                public Loader<ArrayList<Movie>> onCreateLoader(int id, Bundle args) {
-                    pBar.setVisibility(View.VISIBLE);
-                    LoadMovies asyncTaskLoader = new LoadMovies(getApplicationContext());
-                    asyncTaskLoader.forceLoad();
-                    return asyncTaskLoader;
-                }
+            }
 
-                @Override
-                public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
-                    pBar.setVisibility(View.GONE);
-                    mAdapter = new MoviesAdapter(MainActivity.this, data);
-                    mAdapter.notifyDataSetChanged();
-                    mRecyclerView.setAdapter(mAdapter);
-                }
-
-                @Override
-                public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
-                    pBar.setVisibility(View.GONE);
-                }
-            });
+            @Override
+            public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
+                pBar.setVisibility(View.GONE);
+            }
+        });
     }
 
     void setSelectedSortingMethod(String sortingMethod) {
@@ -219,11 +206,13 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
             if (mRecyclerView != null && mRecyclerView.getLayoutManager() != null) {
                 RVstate = RVLayoutManager.onSaveInstanceState();
                 outState.putParcelable("RVstate", RVstate);
-
+                Log.d("TEST", "saving state");
             }
         } else {
-            outState.putInt("ScrollStateX", mGridView.getScrollX());
-            outState.putInt("ScrollStateY", mGridView.getScrollY());
+            outState.putInt("GScrollStateX", mGridView.getScrollX());
+            outState.putInt("GScrollStateY", mGridView.getScrollY());
+            outState.putInt("G", mGridView.getFirstVisiblePosition());
+            GridViewLatestPosition = mGridView.getFirstVisiblePosition();
             if (mGridView != null) {
                 GVstate = mGridView.onSaveInstanceState();
                 outState.putParcelable("GVstate", GVstate);
@@ -232,7 +221,6 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         }
     }
 
-
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -240,34 +228,39 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
         if (savedInstanceState != null) {
             RVstate = savedInstanceState.getParcelable("RVstate");
             GVstate = savedInstanceState.getParcelable("GVstate");
+
+            Log.d("TEST", "restoring state");
             RVLayoutManager.onRestoreInstanceState(RVstate);
         }
         if (mRecyclerView.getVisibility() == View.VISIBLE) { //IT MEANS I AM NOT USING GRIDVIEW
             mRecyclerView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
         } else {
-            mGridView.scrollTo(savedInstanceState.getInt("ScrollStateX"), savedInstanceState.getInt("ScrollStateY"));
+            //mGridView.scrollTo(savedInstanceState.getInt("GScrollStateX"), savedInstanceState.getInt("GScrollStateY"));
+            mGridView.setSelection(savedInstanceState.getInt("G"));
         }
     }
+
+    String getSelectedSortingMethod() {
+        String sorting = PreferenceManager.getDefaultSharedPreferences(this).getString("sorting", "");
+        if (sorting.length() < 1) return "popular"; //default value
+        return sorting;
+    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        mRecyclerView = findViewById(R.id.listFilms);
-        mGridView = findViewById(R.id.gridView);
-
         if (RVstate != null && mRecyclerView != null) {
             RVLayoutManager.onRestoreInstanceState(RVstate);
         }
-
         if (GVstate != null && mGridView != null) {
             mGridView.onRestoreInstanceState(GVstate);
         }
 
-
-
-        if (mGridView.getVisibility() == View.VISIBLE) { //IF TRUE IT MEANS WE ARE IN FAVOURITE LIST
+        if (getSelectedSortingMethod().equals("favourite") || mGridView.getVisibility() == View.VISIBLE) { //IF TRUE IT MEANS WE ARE IN FAVOURITE LIST
             setUpGridView(); //this will update the data even if i remove a new favourite from the detail activity
+            //mGridView.setSelection(GridViewLatestPosition);
         }
     }
 

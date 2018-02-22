@@ -56,7 +56,7 @@ public class LoadSingleMovie extends android.support.v4.content.AsyncTaskLoader<
                 movie.setReleaseDate(root.getString("release_date"));
             }
             if (root.has("vote_average")) {
-                movie.setRating(root.getInt("vote_average"));
+                movie.setRating(root.getDouble("vote_average"));
             }
             movie.setVideosUrl(videoUrl(id));
 

@@ -50,7 +50,9 @@ public class LoadMovies extends android.support.v4.content.AsyncTaskLoader<Array
     String getSelectedSortingMethod() {
         Context context = getContext();
         String sorting = PreferenceManager.getDefaultSharedPreferences(context).getString("sorting", "");
-        if (sorting.length() < 1) return "popular"; //default value
+        Log.wtf("SORTING METHOD", sorting);
+        if (sorting.length() < 1 || sorting.equals("favourite"))
+            return "popular"; //default value
         return sorting;
     }
 
@@ -58,6 +60,7 @@ public class LoadMovies extends android.support.v4.content.AsyncTaskLoader<Array
     private java.net.URL buildUrl() {
         String sorting = getSelectedSortingMethod();
         Log.w("Sorting", sorting);
+        if (sorting == "favourite") sorting = "popular";
         String BASE_URL = "https://api.themoviedb.org/3/movie/" + sorting + "?api_key=";
 
         Uri moviesUri = Uri.parse(BASE_URL + KEY).buildUpon()
