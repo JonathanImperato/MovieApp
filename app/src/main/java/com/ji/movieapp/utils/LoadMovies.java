@@ -123,8 +123,7 @@ public class LoadMovies extends android.support.v4.content.AsyncTaskLoader<Array
                         movie.setImage("http://image.tmdb.org/t/p/w780/" + image);
                     }
                     if (item.has("vote_average")) {
-                        int rating = item.optInt("vote_average");
-                        movie.setRating(rating);
+                        movie.setRating(item.optString("vote_average"));
                     }
                     if (item.has("title")) {
                         String title = item.optString("title");

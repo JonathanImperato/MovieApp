@@ -268,5 +268,4 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
                 mGridView.setSelection(GridViewLatestPosition);
         }
     }
-
 }

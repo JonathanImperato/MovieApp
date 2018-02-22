@@ -1,7 +1,10 @@
 package com.ji.movieapp.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,8 +66,28 @@ public class MoviesAdapter extends RecyclerView.Adapter {
             int adapterPosition = getAdapterPosition();
             Movie movie = mMovies.get(adapterPosition);
             if (view.getId() == R.id.thumbnail) {
-                mContext.startActivity(new Intent(mContext, DetailActivity.class).putExtra("movie", movie));
+                animateIntent(view, movie);
             }
+        }
+
+
+        public void animateIntent(View view, Movie movie) {
+
+            // Ordinary Intent for launching a new activity
+            Intent intent =
+                    new Intent(mContext, DetailActivity.class).putExtra("movie", movie);
+
+            // Get the transition name from the string
+            String transitionName = mContext.getString(R.string.transition_string);
+
+            // Define the view that the animation will start from
+            View viewStart = view.findViewById(R.id.thumbnail);
+
+            ActivityOptionsCompat options =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, viewStart, transitionName);
+
+            //Start the Intent
+            ActivityCompat.startActivity(mContext, intent, options.toBundle());
         }
     }
 }

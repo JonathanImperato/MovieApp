@@ -23,5 +23,7 @@
     <string name="movie_image">Movie image</string>
     <string name="test">TEST</string>
     <string name="key">PUT YOUR KEY HERE</string>
+    <string name="transition_string">SHAREDELEMENT</string>
     <string name="description">DESCRIPTION</string>
+
 </resources>

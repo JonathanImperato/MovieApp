@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
@@ -17,8 +18,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -76,6 +75,23 @@ public class DetailActivity extends AppCompatActivity {
         mRecyclerViewTrailers.setHasFixedSize(true);
         mRecyclerViewTrailers.setAdapter(videoAdapter);
 
+        final FloatingActionButton fab = findViewById(R.id.fab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (isFavourite()) {
+                    Toast.makeText(DetailActivity.this, R.string.fav_removed, Toast.LENGTH_SHORT).show();
+                    removeData();
+                    fab.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_star_border_24dp));
+                } else {
+                    Toast.makeText(DetailActivity.this, R.string.fav_added, Toast.LENGTH_SHORT).show();
+                    insertData();
+                    fab.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_star_24dp));
+                }
+            }
+        });
         if (getIntent().getExtras().getParcelable("movie") != null) {
             movie = getIntent().getExtras().getParcelable("movie");
             ArrayList<String> videos = movie.getVideosUrl();
@@ -118,6 +134,11 @@ public class DetailActivity extends AppCompatActivity {
                 updateDataFromOfflineToOnline();
                 setUpRecyclerView();
             }
+        }
+        if (isFavourite()) {
+            fab.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_star_24dp));
+        } else {
+            fab.setImageDrawable(ContextCompat.getDrawable(DetailActivity.this, R.drawable.ic_star_border_24dp));
         }
 
     }
@@ -212,34 +233,34 @@ public class DetailActivity extends AppCompatActivity {
         this.getContentResolver().delete(MoviesContract.MoviesEntry.CONTENT_URI, MoviesContract.MoviesEntry.COLUMN_MOVIE_ID + " = " + movie.getId(), null);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
-        if (isFavourite()) {
-            menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_star_24dp));
-        }
+    /*   @Override
+       public boolean onCreateOptionsMenu(Menu menu) {
+           getMenuInflater().inflate(R.menu.menu_detail, menu);
+           if (isFavourite()) {
+               menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.ic_star_24dp));
+           }
 
-        return super.onCreateOptionsMenu(menu);
-    }
+           return super.onCreateOptionsMenu(menu);
+       }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add_fav:
-                if (isFavourite()) {
-                    Toast.makeText(this, R.string.fav_removed, Toast.LENGTH_SHORT).show();
-                    removeData();
-                    item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_star_border_24dp));
-                } else {
-                    Toast.makeText(this, R.string.fav_added, Toast.LENGTH_SHORT).show();
-                    insertData();
-                    item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_star_24dp));
-                    break;
-                }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+       @Override
+       public boolean onOptionsItemSelected(MenuItem item) {
+           switch (item.getItemId()) {
+               case R.id.action_add_fav:
+                   if (isFavourite()) {
+                       Toast.makeText(this, R.string.fav_removed, Toast.LENGTH_SHORT).show();
+                       removeData();
+                       item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_star_border_24dp));
+                   } else {
+                       Toast.makeText(this, R.string.fav_added, Toast.LENGTH_SHORT).show();
+                       insertData();
+                       item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_star_24dp));
+                       break;
+                   }
+           }
+           return super.onOptionsItemSelected(item);
+       }
+   */
     void setUpRecyclerView() {
         mAdapter = null;
         mRecyclerView.setAdapter(mAdapter);

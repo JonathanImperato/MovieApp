@@ -53,10 +53,10 @@ public class LoadSingleMovie extends android.support.v4.content.AsyncTaskLoader<
         try {
             root = new JSONObject(json);
             if (root.has("release_date")) {
-                movie.setReleaseDate(root.getString("release_date"));
+                movie.setReleaseDate(root.optString("release_date"));
             }
             if (root.has("vote_average")) {
-                movie.setRating(root.getDouble("vote_average"));
+                movie.setRating(root.optString("vote_average"));
             }
             movie.setVideosUrl(videoUrl(id));
 

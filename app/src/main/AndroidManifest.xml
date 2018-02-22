@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <provider
-            android:name="com.ji.movieapp.data.MoviesProvider"
+            android:name=".data.MoviesProvider"
             android:authorities="com.ji.movieapp.app"
             android:exported="false"
             android:syncable="true" />
@@ -33,7 +33,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ji.movieapp.MainActivity" />
         </activity>
-
     </application>
 
 </manifest>

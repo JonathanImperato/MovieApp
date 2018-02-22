@@ -10,6 +10,9 @@
         android:layout_height="250dp"
         android:contentDescription="@string/movie_image"
         android:minHeight="150dp"
+        android:clickable="true"
+        android:onClick="animateIntent"
+        android:transitionName="@string/transition_string"
         android:scaleType="centerCrop" />
 
 </android.support.constraint.ConstraintLayout>

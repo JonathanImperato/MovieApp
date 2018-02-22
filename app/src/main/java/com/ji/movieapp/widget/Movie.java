@@ -16,12 +16,12 @@ public class Movie implements Parcelable {
     String briefDescription;
     ArrayList<String> videosUrl;
     String id;
-    double rating;
+    String rating;
 
     public Movie() {
     }
 
-    public Movie(String name, String image, String releaseDate, String briefDescription, ArrayList<String> videosUrl, String id, int rating) {
+    public Movie(String name, String image, String releaseDate, String briefDescription, ArrayList<String> videosUrl, String id, String rating) {
         this.name = name;
         this.image = image;
         this.releaseDate = releaseDate;
@@ -39,7 +39,7 @@ public class Movie implements Parcelable {
         briefDescription = in.readString();
         videosUrl = in.createStringArrayList();
         id = in.readString();
-        rating = in.readInt();
+        rating = in.readString();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -103,11 +103,11 @@ public class Movie implements Parcelable {
         this.briefDescription = briefDescription;
     }
 
-    public double getRating() {
+    public String getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 
@@ -125,6 +125,6 @@ public class Movie implements Parcelable {
         parcel.writeString(briefDescription);
         parcel.writeStringList(videosUrl);
         parcel.writeString(id);
-        parcel.writeDouble(rating);
+        parcel.writeString(rating);
     }
 }

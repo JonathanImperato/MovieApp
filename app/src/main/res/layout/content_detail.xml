@@ -22,6 +22,7 @@
             android:layout_marginRight="36dp"
             android:contentDescription="@string/no_image"
             android:fitsSystemWindows="true"
+            android:transitionName="@string/transition_string"
             android:scaleType="centerCrop"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteY="0dp" />

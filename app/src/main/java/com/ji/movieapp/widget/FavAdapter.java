@@ -67,7 +67,7 @@ public class FavAdapter extends CursorAdapter {
         Picasso.with(mContext).load(cursor.getString(imgIndex)).into(viewHolder.img);
 
 
-        final Movie movie = new Movie(title, image, null, desc, null, id, 0);
+        final Movie movie = new Movie(title, image, null, desc, null, id, "0");
 
         viewHolder.img.setOnClickListener(new View.OnClickListener() {
             @Override
