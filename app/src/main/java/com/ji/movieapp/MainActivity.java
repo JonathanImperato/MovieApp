@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
                     mGridView.setVisibility(View.GONE);
                     setSelectedSortingMethod("top_rated");
                     setUpRecyclerView(TASK_ID_UPDATE);
+                    mRecyclerView.scrollToPosition(0); //scroll to top
                 }
                 break;
             case R.id.sort_by_popularity:
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements android.app.Loade
                     mGridView.setVisibility(View.GONE);
                     setSelectedSortingMethod("popular");
                     setUpRecyclerView(TASK_ID_UPDATE);
+                    mRecyclerView.scrollToPosition(0); //scroll to top
                 }
                 break;
             case R.id.fav:
